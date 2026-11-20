@@ -9,45 +9,100 @@ import java.util.*;
 
 public class BinarySearchTree<T extends Comparable<T>> implements BSTInterface<T>
 {
-    protected BinaryNode<T> root;      // reference to the root of this BST 
-    // Creates an empty Binary Search Tree object
+    protected BinaryNode<T> root;      
+
     public BinarySearchTree()
     {
         root = new BinaryNode<>(null);
     }
 
-    // Returns true if this BST is empty; otherwise, returns false.
     public boolean isEmpty()
     {
-        return false;
+        return root.getInfo() == null;
     }
 
-    // Returns the number of elements in this BST.
     public int size()
     {
-        int count = 0;
-        BinaryNode<T> currentNode = root;
-        while (currentNode != null) 
-        {
-            currentNode = 
-            count++;
+        int count = 1;
+        if(root.getLeft() != null) {
+            count += sizeHelper(root.getLeft());
         }
-        return -1;
+        if(root.getRight() != null) {
+            count += sizeHelper(root.getRight());
+        }
+        return count;
     }
 
-    // Adds element to this BST. The tree retains its BST property.
+    private int sizeHelper(BinaryNode<T> node) {
+        int count = 1;
+        if(node.getLeft() != null) {
+            count += sizeHelper(node.getLeft());
+        }
+        if(node.getRight() != null) {
+            count += sizeHelper(node.getRight());
+        }
+        return count;
+    }
+
     public void add (T element)
     {
+        BinaryNode<T> currentNode = root;
+        boolean notAdded = true;
+        if(root.getInfo() == null) {
+            root.setInfo(element);
+            notAdded = false;
+        }
+        while(notAdded) {
+            if(element.compareTo(currentNode.getInfo()) <= 0) {
+                if(currentNode.getLeft() == null) {
+                    currentNode.setLeft(new BinaryNode<T>(element));
+                    notAdded = false;
+                }
+                else {
+                    currentNode = currentNode.getLeft();
+                }
+            }
+            else {
+                if(currentNode.getRight() == null) {
+                    currentNode.setRight(new BinaryNode<T>(element));
+                    notAdded = false;
+                }
+                else {
+                    currentNode = currentNode.getRight();
+                }
+            }
+        }
     }
-
-    // Returns true if this BST contains an element e such that 
-    // e.compareTo(element) == 0; otherwise, returns false.
     public boolean contains (T element)
     {
-        return false;
+        if(root.getInfo() == null) {
+            return false;
+        }
+        return containsHelper(element, root);
     }
 
-    // Returns a graphical representation of the tree
+    private boolean containsHelper(T element, BinaryNode<T> node) {
+        if(element.compareTo(node.getInfo()) == 0) {
+            return true;
+        }
+        else if(element.compareTo(node.getInfo()) < 0) {
+            if(node.getLeft() == null) {
+                return false;
+            }
+            else {
+                return containsHelper(element, node.getLeft());
+            }
+        }
+        else {
+            if(node.getRight() == null) {
+                return false;
+            }
+            else {
+                return containsHelper(element, node.getRight());
+            }
+        }
+    }
+
     public String toString()
     {
         return toString(root, 0);
@@ -67,36 +122,68 @@ public class BinarySearchTree<T extends Comparable<T>> implements BSTInterface<T
         return str;
     }
 
-    // Returns a list of elements from a preorder traversal
     public List<T> preorderTraverse()
     {
-        return null;
+        List<T> list = new ArrayList<>();
+        preorderHelper(root, list);
+        return list;
     }
-
-    // Returns a list of elements from an inorder traversal
-    public List<T> inorderTraverse()
-    {
-        return null;
-    }
-
-    // Returns a list of elements from a postorder traversal
-    public List<T> postorderTraverse()
-    {
-        return null;
-    }
-
-    // Removes an element e from this BST such that e.compareTo(element) == 0
-    public void remove (T element)
-    {
-        BinaryNode<T> currentNode = new BinaryNode<>(null);
-        if(currentNode.getInfo().equals(element))
-        {
-            
+    private void preorderHelper(BinaryNode<T> node, List<T> list) {
+        list.add(node.getInfo());
+        if(node.getLeft() != null) {
+            preorderHelper(node.getLeft(), list);
+        }
+        if(node.getRight() != null) {
+            preorderHelper(node.getRight(), list);
         }
     }
 
-    // Restructures this BST to be optimally balanced
+    public List<T> inorderTraverse()
+    {
+        List<T> list = new ArrayList<>();
+        inorderHelper(root, list);
+        return list;
+    }
+    private void inorderHelper(BinaryNode<T> node, List<T> list) {
+        if(node.getLeft() != null) {
+            inorderHelper(node.getLeft(), list);
+        }
+        list.add(node.getInfo());
+        if(node.getRight() != null) {
+            inorderHelper(node.getRight(), list);
+        }
+    }
+
+    public List<T> postorderTraverse()
+    {
+        List<T> list = new ArrayList<>();
+        postorderHelper(root, list);
+        return list;
+    }
+    private void postorderHelper(BinaryNode<T> node, List<T> list) {
+        if(node.getLeft() != null) {
+            postorderHelper(node.getLeft(), list);
+        }
+        if(node.getRight() != null) {
+            postorderHelper(node.getRight(), list);
+        }
+        list.add(node.getInfo());
+    }
+
+    public void remove (T element)
+    {
+
+    }
+
     public void balance()
     {
+        int sizeLeft = 0;
+        int sizeRight = 0;
+        BinaryNode<T> node = root;
+        if(node.getLeft() != null)
+        {
+            sizeLeft++;
+            node = node.getLeft();
+        }
     }
 }
