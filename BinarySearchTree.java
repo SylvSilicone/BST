@@ -210,44 +210,83 @@ public class BinarySearchTree<T extends Comparable<T>> implements BSTInterface<T
         list.add(node.getInfo());
     }
 
-    // Removes an element e from this BST such that e.compareTo(element) == 0
-    public void remove (T element)
+    public void remove(T element)
     {
-        if(isEmpty()) {
+        if(root.getInfo() == null) {
             return;
         }
-        root = removeHelper(root, element);
-        if(root == null) {
-            root = new BinaryNode<>(null);
-        }
-    }
 
-    private BinaryNode<T> removeHelper(BinaryNode<T> node, T element)
-    {
-        if(node == null) {
-            return null;
+        BinaryNode<T> node = null;
+        BinaryNode<T> current = root;
+
+        while(!current.getInfo().equals(element)) {
+            if(element.compareTo(current.getInfo()) < 0 && current.getLeft() != null) {
+                node = current;
+                current = current.getLeft();
+            }
+            else if(element.compareTo(current.getInfo()) > 0 && current.getRight() != null) {
+                node = current;
+                current = current.getRight();
+            }
+            else {
+                return;
+            }
         }
 
-        int comparison = element.compareTo(node.getInfo());
-        if(comparison < 0) {
-            node.setLeft(removeHelper(node.getLeft(), element));
+        if(current.getLeft() == null && current.getRight() == null) {
+            if(node == null) {
+                root = null;
+            }
+            else if(node.getLeft() == current) {
+                node.setLeft(null);
+            }
+            else {
+                node.setRight(null);
+            }
         }
-        else if(comparison > 0) {
-            node.setRight(removeHelper(node.getRight(), element));
+
+        else if(current.getLeft() != null && current.getRight() == null) {
+            if(node == null) {
+                root = current.getLeft();
+            }
+            else if(node.getLeft() == current) {
+                node.setLeft(current.getLeft());
+            }
+            else {
+                node.setRight(current.getLeft());
+            }
         }
+
+        else if(current.getLeft() == null && current.getRight() != null) {
+            if(node == null) {
+                root = current.getRight();
+            }
+            else if(node.getLeft() == current) {
+                node.setLeft(current.getRight());
+            }
+            else {
+                node.setRight(current.getRight());
+            }
+        }
+
         else {
-            if(node.getLeft() == null) {
-                return node.getRight();
-            }
-            if(node.getRight() == null) {
-                return node.getLeft();
+            BinaryNode<T> snode = current;
+            BinaryNode<T> successor = current.getRight();
+
+            while(successor.getLeft() != null) {
+                snode = successor;
+                successor = successor.getLeft();
             }
 
-            BinaryNode<T> successor = minimumNode(node.getRight());
-            node.setInfo(successor.getInfo());
-            node.setRight(removeHelper(node.getRight(), successor.getInfo()));
+            current.setInfo(successor.getInfo());
+
+            if(snode == current) {
+                snode.setRight(successor.getRight());
+            }
+            else {
+                snode.setLeft(successor.getRight());
+            }
         }
-        return node;
     }
 
     private BinaryNode<T> minimumNode(BinaryNode<T> node)
